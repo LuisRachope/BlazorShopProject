@@ -9,6 +9,6 @@ namespace BlazorShop.Api.Entities
         [MaxLength(100)]
         public string NomeUsuario { get; set; } = string.Empty;
 
-        public Carrinho? Carrinho { get; set; } 
+        public Carrinho? Carrinho { get; set; }
     }
 }

@@ -27,13 +27,16 @@ else
                             <div class="mb-4">
                                 @item.ProdutoDescricao
                             </div>
-                                <span>Preço: <b>@item.Preco.ToString("C")</b></span>
+                            <span>Preço: <b>@item.Preco.ToString("C")</b></span>
                             <div>
-                                <button class="btn btn-danger sm">Excluir</button>
+                                <button @onclick="(()=> DeletaCarrinhoItem_Click(item.Id))"
+                                    class="btn btn-danger sm">
+                                    <span class="oi oi-trash"></span>    
+                                </button>
                             </div>
                         </div>
                     </div>
-                    <br/>
+                    <br />
                 }
             </div>
             <div class="col-md-3">
@@ -49,7 +52,7 @@ else
     }
     else
     {
-        // exibir carrinho bazio    
+        // exibir carrinho bazio
         <div>
             <h3><b>Seu carrinho está vazio.</b></h3>
         </div>
@@ -76,5 +79,25 @@ else
             //Log Exception
             MensagemErro = err.Message;
         }
+    }
+
+    protected async Task DeletaCarrinhoItem_Click(int id)
+    {
+        // Exclui o item do banco de dados
+        var carrinhoItemDto = await CarrinhoCompraService.DeletaItem(id);
+
+        // Remoção do item da coleção de objtos da mermoria no cliente
+        await RemoveCarrinhoItem(id);
+    }
+
+    private CarrinhoItemDto GetCarrinhoItem(int id)
+    {
+        return CarrinhoCompraItens.FirstOrDefault(i => i.Id == id);
+    }
+
+    private async Task RemoveCarrinhoItem(int id)
+    {
+        var carrinhoItemDto = GetCarrinhoItem(id);
+        CarrinhoCompraItens.Remove(carrinhoItemDto);
     }
 }

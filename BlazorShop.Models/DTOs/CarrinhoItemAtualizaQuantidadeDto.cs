@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace BlazorShop.Models.DTOs
 {
-    public class CarrrinhoItemAtualizaQuantidadeDto
+    public class CarrinhoItemAtualizaQuantidadeDto
     {
         public int CarrinhoItemId { get; set; }
-        public int Quantidade { get;}
+        public int Quantidade { get; set; }
     }
 }

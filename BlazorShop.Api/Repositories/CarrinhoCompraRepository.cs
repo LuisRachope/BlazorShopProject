@@ -45,10 +45,7 @@ namespace BlazorShop.Api.Repositories
             return null;
         }
 
-        public Task<CarrinhoItem> AtualizaQuantidade(int id, CarrrinhoItemAtualizaQuantidadeDto carrrinhoItemAtualizaQuantidadeDto)
-        {
-            throw new NotImplementedException();
-        }
+      
 
         public async Task<CarrinhoItem> DeletaItem(int id)
         {
@@ -90,6 +87,21 @@ namespace BlazorShop.Api.Repositories
                               Quantidade = carrinhoItem.Quantidade,
                               CarrinhoId = carrinhoItem.CarrinhoId
                           }).ToListAsync();
+        }
+
+        public async Task<CarrinhoItem> AtualizaQuantidade(int id, 
+            CarrinhoItemAtualizaQuantidadeDto carrinhoItemAtualizaQuantidadeDto)
+        {
+            var carrinhoItem = await _context.CarrinhoItens.FindAsync(id);
+
+            if (carrinhoItem is not null)
+            {
+                carrinhoItem.Quantidade = carrinhoItemAtualizaQuantidadeDto.Quantidade;
+                await _context.SaveChangesAsync();
+                return carrinhoItem;
+            }
+
+            return null;
         }
     }
 }

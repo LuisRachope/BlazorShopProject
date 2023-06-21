@@ -1,6 +1,8 @@
 ﻿using BlazorShop.Models.DTOs;
 using System.Net;
 using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 
 namespace BlazorShop.Web.Services
 {
@@ -91,6 +93,31 @@ namespace BlazorShop.Web.Services
             catch (Exception err)
             {
                 _logger.LogError($"Erro ao acessar carrinhos : api/carrinhoCompra. Mensagem: {err}");
+                throw;
+            }
+        }
+
+        public async Task<CarrinhoItemDto> AtualizaQuantidade(CarrinhoItemAtualizaQuantidadeDto 
+                                                        carrinhoItemAtualizaQuantidadeDto)
+        {
+            try
+            {
+                var jsonRequest = JsonSerializer.Serialize(carrinhoItemAtualizaQuantidadeDto);
+
+                var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json-patch+json");
+
+                var response = await _httpClient.PatchAsync($"api/CarrinhoCompra/{carrinhoItemAtualizaQuantidadeDto.CarrinhoItemId}", 
+                    content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<CarrinhoItemDto>();
+                }
+                return null;
+            }
+            catch (Exception err)
+            {
+                _logger.LogError($"Erro ao tentar atualizar o carrinho : application/json-patch+json. Mensagem: {err}");
                 throw;
             }
         }

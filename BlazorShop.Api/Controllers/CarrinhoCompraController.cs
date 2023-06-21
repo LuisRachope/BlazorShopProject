@@ -135,5 +135,29 @@ namespace BlazorShop.Api.Controllers
             }
         }
 
+        [HttpPatch("{id:int}")]
+        public async Task<ActionResult<CarrinhoItemDto>> AtualizaQuantidade(int id,
+            CarrinhoItemAtualizaQuantidadeDto carrinhoItemAtualizaQuantidadeDto)
+        {
+            try
+            {
+                var carrinhoItem = await _carrinhoCompraRepository.AtualizaQuantidade(id, carrinhoItemAtualizaQuantidadeDto);
+
+                if (carrinhoItem is null)
+                {
+                    return NotFound();
+                }
+
+                var produto = await _produtoRepository.GetItem(carrinhoItem.ProdutoId);
+                var carrinhoItemDto = carrinhoItem.ConverterCarrinhoItemParaDto(produto);
+                return Ok(carrinhoItemDto);
+            }
+            catch (Exception err)
+            {
+                _logger.LogError($"## Erro ao tentar atualizar o carrinho.");
+                return StatusCode(StatusCodes.Status500InternalServerError, err.Message);
+            }
+        }
+
     }
 }

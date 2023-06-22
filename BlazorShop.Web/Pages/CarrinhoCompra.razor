@@ -81,7 +81,8 @@ else
         {
             CarrinhoCompraItens = await CarrinhoCompraService.GetItens(UsuarioLogado.UsuarioId);
 
-            CalculaResumoCarrinhoTotal();
+            //CalculaResumoCarrinhoTotal();
+            CarrinhoChanged();
         }
         catch (Exception err)
         {
@@ -98,7 +99,8 @@ else
         // Remoção do item da coleção de objtos da mermoria no cliente
         await RemoveCarrinhoItem(id);
 
-        CalculaResumoCarrinhoTotal();
+        //CalculaResumoCarrinhoTotal();
+        CarrinhoChanged();
     }
 
     private CarrinhoItemDto GetCarrinhoItem(int id)
@@ -126,9 +128,9 @@ else
 
                 var retornaItemAtualizadoDTto = await CarrinhoCompraService.AtualizaQuantidade(atualizaItemDto);
 
-
                 AtualizaPrecoTotalItem(retornaItemAtualizadoDTto);
-                CalculaResumoCarrinhoTotal();
+                //CalculaResumoCarrinhoTotal();
+                CarrinhoChanged();
                 await Js.InvokeVoidAsync("TornaBotaoAtualizarQuantidadeVisivel", id, false);
             }
             else
@@ -174,5 +176,11 @@ else
     protected async Task AtualizaQuantidade_Input(int id)
     {
         await Js.InvokeVoidAsync("TornaBotaoAtualizarQuantidadeVisivel", id, true);
+    }
+
+    private void CarrinhoChanged()
+    {
+        CalculaResumoCarrinhoTotal();
+        CarrinhoCompraService.RaiseEventOnCarrinhoCompraChanged(QuantidadeTotal);
     }
 }

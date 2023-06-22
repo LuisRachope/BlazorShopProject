@@ -11,6 +11,8 @@ namespace BlazorShop.Web.Services
         public HttpClient _httpClient;
         public ILogger<ProdutoService> _logger;
 
+        public event Action<int> OnCarrinhoCompraChanged;
+
         public CarrinhoCompraService(HttpClient httpClient, ILogger<ProdutoService> logger)
         {
             _httpClient = httpClient;
@@ -119,6 +121,14 @@ namespace BlazorShop.Web.Services
             {
                 _logger.LogError($"Erro ao tentar atualizar o carrinho : application/json-patch+json. Mensagem: {err}");
                 throw;
+            }
+        }
+
+        public void RaiseEventOnCarrinhoCompraChanged(int totalQuantidade)
+        {
+            if (OnCarrinhoCompraChanged != null)
+            {
+                OnCarrinhoCompraChanged.Invoke(totalQuantidade);
             }
         }
     }

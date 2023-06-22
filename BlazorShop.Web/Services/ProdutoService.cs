@@ -59,5 +59,59 @@ namespace BlazorShop.Web.Services
                 throw;
             }
         }
+
+        public async Task<IEnumerable<CategoriaDto>> GetCategorias()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/Produtos/GetCategorias");
+
+                if (response.IsSuccessStatusCode) // Status code 200-299
+                {
+                    if (response.StatusCode == HttpStatusCode.NoContent) // Status 204
+                    {
+                        return Enumerable.Empty<CategoriaDto>(); //retorna os valores padrão/empty
+                    }
+                    return await response.Content.ReadFromJsonAsync<IEnumerable<CategoriaDto>>();
+                }
+                else
+                {
+                    var message = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Http Status Code: {response.StatusCode} - {message}");
+                }
+            }
+            catch (Exception)
+            {
+                //log exception
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<ProdutoDto>> GetItensPorCategoria(int categoriaId)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/Produtos/GetItensPorCategoria/{categoriaId}");
+
+                if (response.IsSuccessStatusCode) // Status code 200-299
+                {
+                    if (response.StatusCode == HttpStatusCode.NoContent) // Status 204
+                    {
+                        return Enumerable.Empty<ProdutoDto>(); //retorna os valores padrão/empty
+                    }
+                    return await response.Content.ReadFromJsonAsync<IEnumerable<ProdutoDto>>();
+                }
+                else
+                {
+                    var message = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Http Status Code: {response.StatusCode} - {message}");
+                }
+            }
+            catch (Exception)
+            {
+                //log exception
+                throw;
+            }
+        }
     }
 }

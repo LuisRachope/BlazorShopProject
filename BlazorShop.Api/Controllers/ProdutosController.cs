@@ -80,5 +80,21 @@ namespace BlazorShop.Api.Controllers
                     "Erro ao acessar a base de dados");
             }
         }
+        [HttpGet]
+        [Route("GetCategorias")]
+        public async Task<ActionResult<IEnumerable<CategoriaDto>>> GetCategorias()
+        {
+            try
+            {
+                var categorias = await _produtoRepository.GetCategorias();
+                var categoriasDto = categorias.ConverterCategoriasParaDto();
+                return Ok(categoriasDto);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                                   "Erro ao acessar a base de dados");
+            }
+        }
     }
 }

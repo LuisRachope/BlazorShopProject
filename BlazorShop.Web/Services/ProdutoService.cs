@@ -15,7 +15,7 @@ namespace BlazorShop.Web.Services
             _logger = logger;
         }
 
-        public async Task<IEnumerable<ProdutoDto>> GetAll()
+        public async Task<IEnumerable<ProdutoDto>> GetItens()
         {
             try
             {

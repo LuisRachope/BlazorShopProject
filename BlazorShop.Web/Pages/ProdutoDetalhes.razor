@@ -46,6 +46,14 @@ else
     [Inject]
     public NavigationManager? NavigationManager { get; set; }
 
+    [Inject]
+    public IGerenciaProdutosLocalStorageService? GerenciaProdutosLocalStorageService { get; set; }
+
+    [Inject]
+    public IGerenciaCarrinhoItensLocalStorageService? GerenciaCarrinhoItensLocalStorageService { get; set; }
+
+    private List<CarrinhoItemDto>? CarrinhoCompraItens { get; set; }
+
     [Parameter]
     public int Id { get; set; }
     public ProdutoDto? Produto { get; set; }
@@ -55,7 +63,9 @@ else
     {
         try
         {
-            Produto = await ProdutoService.GetItem(Id);
+            CarrinhoCompraItens = await GerenciaCarrinhoItensLocalStorageService.GetCollection();
+            //Produto = await ProdutoService.GetItem(Id);
+            Produto = await GetProdutoPorId(Id);
         }
         catch (Exception err)
         {
@@ -68,6 +78,13 @@ else
         try
         {
             var carrinhoItemDto = await carrinhoCompraService.AdicionaItem(carrinhoItemAdicionaDto);
+
+            if (carrinhoItemDto != null)
+            {
+                CarrinhoCompraItens.Add(carrinhoItemDto);
+                await GerenciaCarrinhoItensLocalStorageService.SaveCollection(CarrinhoCompraItens);
+            }
+
             NavigationManager.NavigateTo("/CarrinhoCompra");
         }
         catch (Exception err)
@@ -75,5 +92,17 @@ else
             //Log Exception
             MensagemErro = err.Message;
         }
+    }
+
+    private async Task<ProdutoDto> GetProdutoPorId(int id)
+    {
+        var produtosDto = await GerenciaProdutosLocalStorageService.GetCollection();
+
+        if (produtosDto != null)
+        {
+            return produtosDto.SingleOrDefault(p => p.Id == id);
+        }
+
+        return null;
     }
 }

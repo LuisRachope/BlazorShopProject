@@ -5,8 +5,9 @@
 
 @if (Produtos == null)
 {
-    <ExibirSpinner/>
-}else
+    <ExibirSpinner />
+}
+else
 {
     <h3 class="mb-5">Produtos</h3>
     @if (Produtos.Count() > 0)
@@ -31,15 +32,41 @@
     public IEnumerable<ProdutoDto>? Produtos { get; set; }
 
     [Inject]
+    public IGerenciaProdutosLocalStorageService? GerenciaProdutosLocalStorageService { get; set; }
+
+    [Inject]
+    public IGerenciaCarrinhoItensLocalStorageService? GerenciaCarrinhoItensLocalStorageService { get; set; }
+
+    [Inject]
     public ICarrinhoCompraService? CarrinhoCompraService { get; set; }
+
+    [Parameter]
+    public string? MensagemErro { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        Produtos = await produtoService.GetAll();
+        try
+        {
+            await LimpaLocalStorage();
 
-        var carrinhoCompraItens = await CarrinhoCompraService.GetItens(UsuarioLogado.UsuarioId);
-        var totalQuantidade = carrinhoCompraItens.Sum(i => i.Quantidade);
+            Produtos = await GerenciaProdutosLocalStorageService.GetCollection();
 
-        CarrinhoCompraService.RaiseEventOnCarrinhoCompraChanged(totalQuantidade);
+            var carrinhoCompraItens = await GerenciaCarrinhoItensLocalStorageService.GetCollection();
+
+            var totalQuantidade = carrinhoCompraItens.Sum(i => i.Quantidade);
+
+            CarrinhoCompraService.RaiseEventOnCarrinhoCompraChanged(totalQuantidade);
+        }
+        catch (Exception err)
+        {
+            //Log Exception
+            MensagemErro = err.Message;
+        }
+    }
+
+    private async Task LimpaLocalStorage()
+    {
+        await GerenciaProdutosLocalStorageService.RemoveCollection();
+        await GerenciaCarrinhoItensLocalStorageService.RemoveCollection();
     }
 }
